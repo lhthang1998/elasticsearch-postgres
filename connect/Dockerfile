@@ -13,4 +13,4 @@ RUN curl -fsSl \
     && rm -f /tmp/es-connector.zip \
     && chown -R kafka:kafka /kafka/connect
 
-USE kafka
+USER kafka
