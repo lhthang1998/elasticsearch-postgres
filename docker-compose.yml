@@ -1,0 +1,102 @@
+services:
+  postgres:
+    image: quay.io/debezium/postgres:16
+    container_name: ep-postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: AdminDb_Pass1
+      POSTGRES_DB: bookstore
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./posgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d bookstore"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  kafka:
+    image: quay.io/debezium/kafka:2.7
+    container_name: ep-kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      CLUSTER_ID: oh-sxaDRTcyAr6FrBxYzA
+      NODE_ID: 1
+      NODE_ROLE: combined
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_HEAD_OPTS: "-Xmx512m -Xms512m"
+
+  connect:
+    build:
+      context: ./connect
+    container_name: ep-connect
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: connect_configs
+      OFFSET_STORAGE_TOPIC: connect_offsets
+      STATUS_STORAGE_TOPIC: connect_statuses
+      KEY_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      KAFKA_HEAD_OPTS: "-Xmx512m -Xms512m"
+    depends_on:
+      kafka:
+        condition: service_started
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 40s
+
+  elasticsearch:
+    build:
+      context: ./elasticsearch
+    container_name: ep-elasticsearch
+    environment:
+      discovery.type: single-node
+      ELASTIC_PASSWORD: passw0rd
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      bootstrap.memory_lock: "true"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+    volumes:
+      - ./es_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -u admin:passw0rd http://localhost:9200 >/dev/null"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 40s
+
+  api:
+    build:
+      context: ./api
+    container_name: ep-api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: admin
+      ELASTICSEARCH_PASSWORD: passw0rd
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+

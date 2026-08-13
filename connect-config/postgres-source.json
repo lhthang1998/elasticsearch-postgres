@@ -1,0 +1,25 @@
+{
+  "name": "postgres-bookstore-source",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "tasks.max": "1",
+    "database.hostname": "postgres",
+    "database.port": "5432",
+    "database.username": "admin",
+    "database.password": "AdminDb_Pass1",
+    "database.dbname": "bookstore",
+    "topic.prefix": "bookstore",
+    "table.include.list": "public.book,public.author",
+    "plugin.name": "pgoutput",
+    "slot.name": "debezium_book",
+    "publication.name": "dbz_book_publication",
+    "publication.autocreate.mode": "filtered",
+    "tombstones.on.delete": "true",
+    "decimal.handling.mode": "double",
+    "heartbeat.interval.ms": "10000",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schema.enable": "false",
+    "value.converter.schema.enable": "false"
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "name": "elasticsearch-bookstore-sink",
+  "config": {
+    "connector.class": "io.confluent.connect.elasticsearch.ElasticsearchSinkConnector",
+    "tasks.max": "1",
+    "topics": "bookstore.public.book,bookstore.public.author",
+    "connection.url": "http://elasticsearch:9200",
+    "connection.username": "admin",
+    "connection.password": "passw0rd",
+    "type.name": "_doc",
+    "key.ignore": "false",
+    "schema.ignore": "false",
+    "behavior.on.null.values": "delete",
+    "drop.invalid.message": "false",
+    "write.method": "upsert",
+    "flush.synchronously": "true",
+    "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+    "key.converter.schema.enable": "false",
+    "value.converter.schema.enable": "false",
+    "transforms": "unwrap,extractkey,route",
+    "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
+    "transforms.unwrap.drop.tombstones": "false",
+    "transforms.unwrap.delete.handling.mode": "none",
+    "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
+    "transforms.extractKey.field": "id",
+    "transforms.route.type": "org.apache.kakfa.connect.transforms.RegexRouter",
+    "transforms.route.regex": "bookstore\\.public\\.(.*)",
+    "transforms.route.replacement": "$1"
+  }
+}

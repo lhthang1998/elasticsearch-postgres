@@ -1,0 +1,8 @@
+mappings:
+  properties:
+    biography:
+      type: text
+      analyzer: vietnamese_analyzer
+      search_analyzer: vietnamese_search_analyzer
+    country:
+      type: keyword

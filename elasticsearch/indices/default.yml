@@ -1,0 +1,32 @@
+settings:
+  number_of_shards: 1
+  number_of_replicas: 0
+  analysis:
+    analyzer:
+      # ICU tokenizer
+      vietnamese_analyzer:
+        type: custom
+        tokenizer: icu_tokenizer
+        filter:
+          - lowercase
+          - icu_folding
+        vietnamese_search_analyzer:
+          type: custom
+          tokenizer: icu_tokenizer
+          filter:
+            - lowercase
+            - icu_folding
+
+
+# Columns every tables share
+mappings:
+  properties:
+    id:
+      type: long
+    name:
+      type: text
+      analyzer: vietnamese_analyzer
+      search_analyzer: vietnamese_search_analyzer
+      fields:
+        keyword:
+          type: keyword

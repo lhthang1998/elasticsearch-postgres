@@ -1,0 +1,12 @@
+.idea
+node_modules/
+__pycache__/
+.venv/
+.DS_Store
+.env
+*.log
+.vscode
+dist/
+coverage/
+posgres_data/
+es_data/

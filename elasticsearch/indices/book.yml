@@ -1,0 +1,8 @@
+mappings:
+  properties:
+    description:
+      type: text
+      analyzer: vietnamese_analyzer
+      search_analyzer: vietnamese_search_analyzer
+    name:
+      type: integer
