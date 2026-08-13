@@ -8,7 +8,7 @@ ES_USER="${ELASTICSEARCH_USERNAME:-admin}"
 ES_PASS="${ELASTICSEARCH_PASSWORD:-passw0rd}"
 ES_AUTH="${ES_USER}:${ES_PASS}"
 
-PYTHON_BIN="${PYTHON_BIN:-python3}"
+PYTHON_BIN="${PYTHON_BIN:-python}"
 SYNC=("${PYTHON_BIN}" "${ROOT_DIR}/tools/sync.py")
 
 echo "===> Starting elasticsearch-postgres stack"
@@ -19,6 +19,8 @@ echo "===> Waiting for elasticsearch"
 
 echo "===> Waiting for Kafka Connect"
 "${ROOT_DIR}/scripts/wait-for.sh" "http://localhost:8083" "Kafka Connect" 90
+
+
 
 echo "===> Creating indices from elasticsearch/indices/"
 "${SYNC[@]}" create-indices --recreate

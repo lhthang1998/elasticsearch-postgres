@@ -58,11 +58,11 @@ for i in $(seq 1 "${attempts}"); do
     fi
 
     echo "  -> ${name} is not ready yet."
-    echo "  -> sleeping 2 seconds..."
+    echo "  -> sleeping 10 seconds..."
     echo
 
     unset curl_exit
-    sleep 2
+    sleep 10
 done
 
 echo

@@ -15,7 +15,7 @@ import json
 import os
 import re
 import sys
-import timeout
+import time
 from pathlib import Path
 
 import requests
@@ -30,7 +30,7 @@ ES_AUTH = (
     os.environ.get("ELASTICSEARCH_USERNAME", "admin"),
     os.environ.get("ELASTICSEARCH_PASSWORD", "passw0rd"),
 )
-CONNECTION_URL = os.environ.get("CONNECTION_URL", "localhost:8083".rstrip("/"))
+CONNECTION_URL = os.environ.get("CONNECTION_URL", "http://localhost:8083".rstrip("/"))
 
 CONNECTORS = [
     ("postgres-bookstore-source", "postgres-source.json"),
@@ -50,7 +50,7 @@ def connect(method, path, **kwargs):
 
 def check(response):
     if not response.ok:
-        raise RuntimeError("{} {} {}".format(ressponse.url, response.status_code, response.text[:400]))
+        raise RuntimeError("{} {} {}".format(response.url, response.status_code, response.text))
     return response
 
 
@@ -130,6 +130,8 @@ def create_indices(args):
         elif es("HEAD", "/" + name).status_code == 200:
             print("Index '{}' already exists - skipping (use --recreate to replace).".format(name))
             continue
+
+        print(json.dumps(body, indent=2))
         print("Creating index '{}' from {}...".format(name, path.name))
         check(es("PUT", "/" + name, json=body))
         print("Index '{}' is ready".format(name))
@@ -178,7 +180,7 @@ def status(args):
         count = doc_count(name)
         print("     {}: {}".format(name, "missing" if count is None else "{} document(s)".format(count)))
 
-    print("\Connectors ({})".format(CONNECTION_URL))
+    print("\nConnectors ({})".format(CONNECTION_URL))
     print_connector_status()
 
 
@@ -186,7 +188,7 @@ def build_parser():
     parsers = argparse.ArgumentParser(
         prog="sync.py", description="Manage indices and connectors for demo"
     )
-    subparsers = parsers.add_subparsers(des="command", required=True)
+    subparsers = parsers.add_subparsers(dest="command", required=True)
 
     create = subparsers.add_parser("create-indices", help="Apply elasticsearch/indices/*.yml")
     create.add_argument(
@@ -226,3 +228,6 @@ def main():
         print("Error {}".format(error), file=sys.stderr)
         return 1
     return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

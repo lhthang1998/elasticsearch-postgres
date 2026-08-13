@@ -18,13 +18,13 @@
     "value.converter": "org.apache.kafka.connect.json.JsonConverter",
     "key.converter.schema.enable": "false",
     "value.converter.schema.enable": "false",
-    "transforms": "unwrap,extractkey,route",
+    "transforms": "unwrap,extractKey,route",
     "transforms.unwrap.type": "io.debezium.transforms.ExtractNewRecordState",
     "transforms.unwrap.drop.tombstones": "false",
     "transforms.unwrap.delete.handling.mode": "none",
     "transforms.extractKey.type": "org.apache.kafka.connect.transforms.ExtractField$Key",
     "transforms.extractKey.field": "id",
-    "transforms.route.type": "org.apache.kakfa.connect.transforms.RegexRouter",
+    "transforms.route.type": "org.apache.kafka.connect.transforms.RegexRouter",
     "transforms.route.regex": "bookstore\\.public\\.(.*)",
     "transforms.route.replacement": "$1"
   }

@@ -5,7 +5,7 @@
     "tasks.max": "1",
     "database.hostname": "postgres",
     "database.port": "5432",
-    "database.username": "admin",
+    "database.user": "admin",
     "database.password": "AdminDb_Pass1",
     "database.dbname": "bookstore",
     "topic.prefix": "bookstore",
